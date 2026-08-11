@@ -30,3 +30,13 @@ def load_runbook(path: Path) -> list[DocumentChunk]:
                 )
             )
     return chunks
+
+
+def load_runbooks(directory: Path) -> list[DocumentChunk]:
+    """Load all Markdown runbooks from a directory."""
+    chunks = []
+
+    for path in sorted(directory.glob("*.md")):
+        chunks.extend(load_runbook(path))
+
+    return chunks

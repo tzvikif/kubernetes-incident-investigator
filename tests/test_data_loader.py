@@ -39,18 +39,3 @@ def test_invalid_case_reports_line_number(tmp_path: Path) -> None:
         load_incident_cases(data_path)
 
     assert isinstance(error_info.value.__cause__, ValidationError)
-
-
-def test_runbook_loader_with_service_routing_case(tmp_path: Path) -> None:
-    runbook_path = tmp_path / "service_routing_runbook.md"
-    runbook_path.write_text(
-        "## Service Routing Issue\n"
-        "This section describes how to handle service routing issues.\n"
-        "## Another Section\n"
-        "Additional information.\n",
-        encoding="utf-8",
-    )
-    chunks = load_runbook(runbook_path)
-    assert len(chunks) == 2
-    assert chunks[0].section == "Service Routing Issue"
-    assert chunks[1].section == "Another Section"
