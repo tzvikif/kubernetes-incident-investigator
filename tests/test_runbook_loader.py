@@ -43,5 +43,12 @@ RUNBOOK_DIRECTORY = (
 def test_load_runbooks_loads_directory() -> None:
     chunks = load_runbooks(RUNBOOK_DIRECTORY)
 
-    assert len(chunks) == 4
-    assert {chunk.topic for chunk in chunks} == {"service_routing"}
+    assert len(chunks) == 24
+    assert {chunk.topic for chunk in chunks} == {
+        "dependency_failure",
+        "service_routing",
+        "dns_failure",
+        "resource_saturation",
+        "latency_degradation",
+        "http_error_increase"
+        }
