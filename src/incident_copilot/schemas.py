@@ -111,3 +111,8 @@ class DocumentChunk(StrictModel):
     topic: str = Field(min_length=1)
     section: str = Field(min_length=1)
     content: str = Field(min_length=1)
+
+class RetrievalResult(StrictModel):
+    chunk: DocumentChunk
+    score: float
+    rank: int = Field(ge=1)
