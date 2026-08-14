@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from enum import StrEnum
-from typing import Literal
+from typing import Literal, Annotated
 
 
 from pydantic import (
@@ -13,6 +13,8 @@ from pydantic import (
     model_validator,
 )
 
+
+NonEmptyString = Annotated[str, Field(min_length=1)]
 
 class StrictModel(BaseModel):
     model_config = ConfigDict(
@@ -68,6 +70,13 @@ class IncidentCategory(StrEnum):
     LATENCY_DEGRADATION = "latency_degradation"
     HTTP_ERROR_INCREASE = "http_error_increase"
 
+# class SupportingEvidence(StrictModel):
+#     query: str = Field(min_length=10)
+#     telemetry: TelemetryFixture
+#     kubernetes_event: str = Field(min_length=1)
+#     dependency_health: str = Field(min_length=1)
+
+
 
 class EvidenceStatus(StrEnum):
     SUFFICIENT = "evidence_sufficient"
@@ -122,3 +131,54 @@ class RetrievalEvaluationCase(StrictModel):
     case_id: str = Field(pattern=r"^retrieval_\d{3}$")
     query: str = Field(min_length=10)
     relevant_chunk_ids: list[str] = Field(min_length=1)
+
+
+class EvidenceSource(StrEnum):
+    QUERY = "query"
+    TELEMETRY = "telemetry"
+    KUBERNETES_EVENT = "kubernetes_event"
+    DEPENDENCY_HEALTH = "dependency_health"
+
+
+class SupportingEvidence(StrictModel):
+    source: EvidenceSource
+    fact: NonEmptyString
+
+
+class RCAResponse(StrictModel):
+    incident_category: IncidentCategory | None
+    evidence_status: EvidenceStatus
+    affected_service: NonEmptyString
+    root_cause: NonEmptyString | None
+    supporting_evidence: list[SupportingEvidence]
+    confidence: float = Field(ge=0, le=1)
+    recommended_action: NonEmptyString
+    limitations: list[NonEmptyString]
+
+    @model_validator(mode="after")
+    def validate_diagnosis_consistency(self) -> "RCAResponse":
+        if (
+            self.evidence_status == EvidenceStatus.INSUFFICIENT
+            and self.root_cause is not None
+        ):
+            raise ValueError(
+                "root_cause must be None when evidence is insufficient"
+            )
+
+        if (
+            self.incident_category is None
+            and self.root_cause is not None
+        ):
+            raise ValueError(
+                "root_cause must be None when incident_category is None"
+            )
+
+        if (
+            self.evidence_status == EvidenceStatus.SUFFICIENT
+            and not self.supporting_evidence
+        ):
+            raise ValueError(
+                "sufficient evidence requires supporting_evidence"
+            )
+
+        return self
