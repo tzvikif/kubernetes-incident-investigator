@@ -116,3 +116,9 @@ class RetrievalResult(StrictModel):
     chunk: DocumentChunk
     score: float
     rank: int = Field(ge=1)
+
+
+class RetrievalEvaluationCase(StrictModel):
+    case_id: str = Field(pattern=r"^retrieval_\d{3}$")
+    query: str = Field(min_length=10)
+    relevant_chunk_ids: list[str] = Field(min_length=1)

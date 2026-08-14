@@ -10,11 +10,10 @@ class DenseRetriever:
         self,
         chunks: list[DocumentChunk],
         model_name: str = DEFAULT_MODEL_NAME,
-        device: str | None = None,
+        device: str | None = "cuda",
     ) -> None:
         if not chunks:
             raise ValueError("DenseRetriever requires at least one chunk")
-        self._device = device
         self._chunks = list(chunks)
         self._model = SentenceTransformer(
             model_name,
