@@ -14,7 +14,7 @@ class DenseRetriever:
     ) -> None:
         if not chunks:
             raise ValueError("DenseRetriever requires at least one chunk")
-
+        self._device = device
         self._chunks = list(chunks)
         self._model = SentenceTransformer(
             model_name,
