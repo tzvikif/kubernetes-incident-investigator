@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from pydantic import ValidationError
-from .schemas import IncidentCase
+from incident_copilot.schemas import IncidentCase
 
 
 def load_incident_cases(path: Path) -> list[IncidentCase]:

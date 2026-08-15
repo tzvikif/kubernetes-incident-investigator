@@ -1,5 +1,5 @@
 from pathlib import Path
-from .runbook_loader import load_runbook
+from incident_copilot.runbook_loader import load_runbook
 
 
 if __name__ == "__main__":

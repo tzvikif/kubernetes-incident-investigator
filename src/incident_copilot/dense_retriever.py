@@ -1,6 +1,6 @@
 from sentence_transformers import SentenceTransformer
 
-from .schemas import DocumentChunk, RetrievalResult
+from incident_copilot.schemas import DocumentChunk, RetrievalResult
 
 DEFAULT_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 

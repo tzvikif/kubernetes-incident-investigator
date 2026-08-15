@@ -3,8 +3,8 @@ from typing import Any
 from openai import APIError, OpenAI
 from pydantic import ValidationError
 
-from .baseline_prompt import build_baseline_messages
-from .schemas import IncidentCase, RCAResponse
+from incident_copilot.baseline_prompt import build_baseline_messages
+from incident_copilot.schemas import IncidentCase, RCAResponse
 
 
 class LLMResponseError(RuntimeError):

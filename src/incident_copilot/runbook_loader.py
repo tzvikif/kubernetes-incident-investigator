@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from .schemas import DocumentChunk
+from incident_copilot.schemas import DocumentChunk
 
 
 def load_runbook(path: Path) -> list[DocumentChunk]:

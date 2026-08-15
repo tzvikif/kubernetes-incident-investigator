@@ -1,6 +1,6 @@
 
 import json
-from .schemas import IncidentCase
+from incident_copilot.schemas import IncidentCase
 
 
 def build_incident_payload(

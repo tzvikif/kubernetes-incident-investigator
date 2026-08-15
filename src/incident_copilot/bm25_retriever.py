@@ -2,7 +2,7 @@ import re
 
 from rank_bm25 import BM25Okapi
 
-from .schemas import DocumentChunk, RetrievalResult
+from incident_copilot.schemas import DocumentChunk, RetrievalResult
 
 
 def tokenize(text: str) -> list[str]:
