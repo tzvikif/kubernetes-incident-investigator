@@ -4,9 +4,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from incident_copilot.baseline_prompt import build_baseline_messages
-from incident_copilot.llm_baseline import LLMBaseline, LLMResponseError
-from incident_copilot.schemas import (
+from src.incident_copilot.baseline_prompt import build_baseline_messages
+from src.incident_copilot.llm_baseline import LLMBaseline, LLMResponseError
+from src.incident_copilot.schemas import (
     DependencyFixture,
     EvidenceSource,
     EvidenceStatus,

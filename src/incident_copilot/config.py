@@ -12,5 +12,4 @@ def get_openai_model() -> str:
         raise ConfigurationError(
             "OPENAI_MODEL environment variable is not configured"
         )
-
     return model
