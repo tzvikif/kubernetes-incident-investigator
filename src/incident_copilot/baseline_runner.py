@@ -2,13 +2,13 @@ from pathlib import Path
 
 from openai import OpenAI
 
-from incident_copilot.baseline_prompt import build_baseline_messages
-from incident_copilot.config import get_openai_model
+from incident_copilot.config import get_openai_judge_model, get_openai_model
 from incident_copilot.data_loader import load_incident_cases
 from incident_copilot.llm_baseline import LLMBaseline
+from incident_copilot.semantic_evaluator import SemanticEvaluator
 from incident_copilot.schemas import IncidentCase, RCAResponse
 from get_keys import get_openai_api_key
-import numpy as np
+
 
 def check(prediction: RCAResponse, case: IncidentCase) -> list[bool]:
     category_correct = (
@@ -41,21 +41,37 @@ def create_baseline() -> LLMBaseline:
     )
 
 
+def create_semantic_evaluator() -> SemanticEvaluator:
+    client = OpenAI(api_key=get_openai_api_key())
+    model = get_openai_judge_model()
+    return SemanticEvaluator(client=client, model=model)
+
+
 if __name__ == "__main__":
     case_path = Path("data/evaluation/incidents_cases.jsonl")
     cases = load_incident_cases(case_path)
     if not cases:
         raise ValueError(f"No incident cases found in {case_path}")
     rca_responses = []
+    baseline = create_baseline()
+    semantic_evaluator = create_semantic_evaluator()
     for i, case in enumerate(cases):
         print(f"Case {i}: {case.case_id}")
-        rca_response = None
-        baseline = create_baseline()
         try:
             rca_response = baseline.diagnose(case=case)
             rca_responses.append(rca_response)
-            print(f"RCA response {rca_response}")
+            print(rca_response.model_dump_json(indent=2))
         except Exception as e:
             print(f"Error during diagnosis: {e}")
+            continue
+
         res = check(rca_response, case)
-        print(f"coverage: {np.sum(res)/len(res)}")
+        print(f"exact-match coverage: {sum(res) / len(res)}")
+
+        try:
+            # The judge sees ground truth only after the RCA has been generated.
+            # It returns claim-level verdicts; Python computes the final scores.
+            semantic_result = semantic_evaluator.evaluate(case, rca_response)
+            print(semantic_result.model_dump_json(indent=2))
+        except Exception as e:
+            print(f"Error during semantic evaluation: {e}")
